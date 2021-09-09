@@ -6,4 +6,9 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Megumin.Explosion" Version="0.1.5" />
+    <PackageReference Include="ToolGood.Words.Pinyin" Version="3.0.2.6" />
+  </ItemGroup>
+
 </Project>

@@ -1,34 +1,14 @@
-﻿using System;
+﻿using Megumin.IsekaiNameGenerator;
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection.Emit;
 
+using ToolGood.Words.Pinyin;
+
 namespace Megumin.Isekai.Name
 {
-    internal static class IEnumerableExtension
-    {
-        static Random random = new Random(DateTimeOffset.UtcNow.GetHashCode());
-        public static T Random<T>(this ICollection<T> enumerable)
-        {
-            if (enumerable.Count > 0)
-            {
-                return enumerable.ElementAt(random.Next(0, enumerable.Count));
-            }
-            return default;
-        }
-
-        public static T Random<T>(this IEnumerable<T> enumerable)
-        {
-            var count = enumerable.Count();
-            if (count > 0)
-            {
-                return enumerable.ElementAt(random.Next(0, count));
-            }
-            return default;
-        }
-    }
-
-
     public class Generator
     {
         static Dictionary<int, Generator> generators = new Dictionary<int, Generator>();
@@ -79,15 +59,22 @@ namespace Megumin.Isekai.Name
         {
             if (generators.TryGetValue(nameLength, out var generator))
             {
-                return generator.Create();
+                return generator.CoreCreate();
             }
 
             return "No Generator";
         }
 
+        public static string Create(string mode)
+        {
+            if (generators.TryGetValue(mode.Length, out var generator))
+            {
+                return generator.CoreCreate(mode);
+            }
 
+            return "No Generator";
+        }
 
-        Random random = new Random(DateTimeOffset.UtcNow.GetHashCode());
         internal protected Generator(int length)
         {
             Length = length;
@@ -95,22 +82,38 @@ namespace Megumin.Isekai.Name
 
         public int Length { get; }
 
-
-
-        public string Create()
+        protected string CoreCreate(string mode = null)
         {
-            if (ToneMode.Count > 0)
+            if (ToneMode.Count == 0)
             {
                 return "No Tone Mode";
             }
-            var mode = ToneMode.Random();
+
+            if (string.IsNullOrEmpty(mode))
+            {
+                mode = ToneMode.Random();
+            }
+            else
+            {
+                if (mode.Length != Length)
+                {
+                    Console.WriteLine("warning: input mode length error");
+                }
+            }
 
             var result = "";
-            foreach (var item in mode)
+            try
             {
-                int tone = int.Parse(item.ToString());
-                var cdict = toneCharactor[tone];
-                result += cdict.Random();
+                foreach (var item in mode)
+                {
+                    int tone = int.Parse(item.ToString());
+                    var cdict = toneCharactor[tone];
+                    result += cdict.Random();
+                }
+            }
+            catch (Exception e)
+            {
+                result = e.ToString();
             }
 
             return result;
@@ -123,6 +126,15 @@ namespace Megumin.Isekai.Name
                 throw new ArgumentException();
             }
 
+            var list = WordsHelper.GetPinyinList(name, true);
+            string mode = "";
+            for (int i = 0; i < list.Length; i++)
+            {
+                var tone = ToneHelper.GetTone(list[i]);
+                toneCharactor[tone].Add(name[i].ToString());
+                mode += tone;
+            }
+            ToneMode.Add(mode);
         }
     }
 }

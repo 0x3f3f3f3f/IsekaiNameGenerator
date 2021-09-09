@@ -16,14 +16,20 @@ namespace IsekaiNameGenerator
             Generator.InitDict(list);
 
 
-
+            Console.WriteLine("Press F1 tone mode / F2 length mode!");
             while (true)
             {
                 var k = Console.ReadKey();
 
-                if (k.Key == ConsoleKey.Enter)
+                if (k.Key == ConsoleKey.F1)
                 {
-                    var name = Generator.Create(4);
+                    Console.WriteLine("Input tone mode......");
+                    var name = Generator.Create(Console.ReadLine());
+                    Console.WriteLine(name);
+                }
+                else if (k.Key == ConsoleKey.F2)
+                {
+                    var name = Generator.Create(GetInputNumber("Input name length 1-9......."));
                     Console.WriteLine(name);
                 }
                 else if (k.Key == ConsoleKey.Escape)
@@ -31,6 +37,17 @@ namespace IsekaiNameGenerator
                     break;
                 }
             }
+        }
+
+        static int GetInputNumber(string tip = "input a number......")
+        {
+            Console.WriteLine(tip);
+            int length = 4;
+            while (!int.TryParse(Console.ReadLine(), out length))
+            {
+
+            }
+            return length;
         }
 
         private static List<string> LoadDictNames()
