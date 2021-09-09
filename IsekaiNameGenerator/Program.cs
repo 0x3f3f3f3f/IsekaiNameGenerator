@@ -15,8 +15,11 @@ namespace IsekaiNameGenerator
 
             Generator.InitDict(list);
 
+            Console.WriteLine("Press F1 tone mode / F2 length mode! /F5 Generate again!");
 
-            Console.WriteLine("Press F1 tone mode / F2 length mode!");
+            int mode = 1;
+            string tone = "4424";
+            int length = 4;
             while (true)
             {
                 var k = Console.ReadKey();
@@ -24,13 +27,37 @@ namespace IsekaiNameGenerator
                 if (k.Key == ConsoleKey.F1)
                 {
                     Console.WriteLine("Input tone mode......");
-                    var name = Generator.Create(Console.ReadLine());
+                    tone = Console.ReadLine();
+                    mode = 1;
+                    var name = Generator.Create(tone);
                     Console.WriteLine(name);
                 }
                 else if (k.Key == ConsoleKey.F2)
                 {
-                    var name = Generator.Create(GetInputNumber("Input name length 1-9......."));
+                    length = GetInputNumber("Input name length 1-9.......");
+                    mode = 2;
+                    var name = Generator.Create(length);
                     Console.WriteLine(name);
+                }
+                else if (k.Key == ConsoleKey.F5)
+                {
+                    switch (mode)
+                    {
+                        case 1:
+                            {
+                                var name = Generator.Create(tone);
+                                Console.WriteLine(name);
+                            }
+                            break;
+                        case 2:
+                            {
+                                var name = Generator.Create(length);
+                                Console.WriteLine(name);
+                            }
+                            break;
+                        default:
+                            break;
+                    }
                 }
                 else if (k.Key == ConsoleKey.Escape)
                 {
